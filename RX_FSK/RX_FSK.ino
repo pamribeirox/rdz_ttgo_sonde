@@ -789,6 +789,7 @@ struct st_configitems config_list[] = {
   {"touch_thresh", 0, &sonde.config.touch_thresh},
   {"power_pout", 0, &sonde.config.power_pout},
   {"led_pout", 0, &sonde.config.led_pout},
+  {"buzz_pout", 0, &sonde.config.buzz_pout},
   {"gps_rxd", 0, &sonde.config.gps_rxd},
   {"gps_txd", 0, &sonde.config.gps_txd},
   {"batt_adc", 0, &sonde.config.batt_adc},
