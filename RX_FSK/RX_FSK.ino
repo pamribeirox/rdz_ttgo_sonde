@@ -1744,10 +1744,15 @@ static void checkTouchButton(Button & button) {
 static unsigned long t_muted = (unsigned long)-1;
 
 void ledOffCallback() {
-  digitalWrite(sonde.config.led_pout, LOW);
-}
+  if (sonde.config.led_pout >= 0 && sonde.config.led_pout != sonde.config.buzz_pout) {
+    digitalWrite(sonde.config.led_pout, LOW);
+  }
+  if (sonde.config.buzz_pout >= 0) {
+    ledcWrite(0,0);
+  }
+} 
 void flashLed(int ms) {
-  if (sonde.config.led_pout >= 0) {
+  if (sonde.config.led_pout >= 0 && sonde.config.led_pout != sonde.config.buzz_pout) {
     if(t_muted != -1) {
       LOG_D(TAG, "Muted at %d\n", t_muted);
       // t_muted was set by key press to mute LED / buzzer
@@ -1757,7 +1762,12 @@ void flashLed(int ms) {
     }
     Serial.println("Not muted");
     digitalWrite(sonde.config.led_pout, HIGH);
-    ledFlasher.once_ms(ms, ledOffCallback);
+    if (sonde.config.buzz_pout >= 0) {
+      ledcWrite(0,16); // ~6% duty cycle
+    }
+    if (sonde.config.led_pout >= 0 || sonde.config.buzz_pout >= 0) {
+      ledFlasher.once_ms(ms, ledOffCallback);
+    }
   }
 }
 
@@ -2036,7 +2046,13 @@ void setup()
     digitalWrite(sonde.config.power_pout & 127, sonde.config.power_pout & 128 ? 1 : 0);
   }
 
-  if (sonde.config.led_pout >= 0) {
+  if (sonde.config.buzz_pout >= 0) {
+    // PWM support for led/buzzer
+    ledcSetup(0,5000,8); // PWM channel 0 at 5kHz, 8 bit resolution
+    ledcAttachPin(sonde.config.buzz_pout, 0);
+  }
+	
+  if (sonde.config.led_pout >= 0 && sonde.config.led_pout != sonde.config.buzz_pout) {
     pinMode(sonde.config.led_pout, OUTPUT);
     flashLed(1000); // testing
   }
