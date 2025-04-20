@@ -142,6 +142,7 @@ void Sonde::defaultConfig() {
 	}
 	config.touch_thresh = 70;
 	config.led_pout = -1;
+	config.buzz_pout = -1;
 	config.power_pout = -1;
 	config.spectrum=10;
 	config.b2mute = 360;
